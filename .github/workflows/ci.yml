@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      # Server tests use mongodb-memory-server (no DB service) and mock the AI
+      # layer (no key → no quota burn, deterministic).
+      - name: Test
+        run: npm test
+        env:
+          NODE_ENV: test
+
+      - name: Build client
+        run: npm run build
