@@ -4,6 +4,12 @@
 import cron from 'node-cron';
 import { finalizeSolutions } from './finalizeSolutions.js';
 import { expireBans } from './expireBans.js';
+import { lruEviction } from './lruEviction.js';
+import { stalenessCheck } from './stalenessCheck.js';
+import { orphanCleanup } from './orphanCleanup.js';
+import { embeddingRefresh } from './embeddingRefresh.js';
+import { softDeletePurge } from './softDeletePurge.js';
+import { recalcAllBadges } from '../services/badgeService.js';
 
 export const jobs = {
   'finalize-solutions': {
@@ -15,6 +21,36 @@ export const jobs = {
     schedule: '0 * * * *', // hourly
     description: 'Lift time-limited bans whose deadline has passed.',
     handler: expireBans,
+  },
+  'badge-recalc': {
+    schedule: '0 2 * * *', // daily at 02:00
+    description: 'Resync every user\'s positive badges to their points.',
+    handler: recalcAllBadges,
+  },
+  'lru-eviction': {
+    schedule: '0 4 * * *', // daily at 04:00
+    description: 'Archive resolved queries unaccessed for 90+ days.',
+    handler: lruEviction,
+  },
+  'staleness-check': {
+    schedule: '0 5 * * 1', // weekly, Monday 05:00
+    description: 'Flag answers older than the staleness window as outdated.',
+    handler: stalenessCheck,
+  },
+  'orphan-cleanup': {
+    schedule: '0 5 * * 2', // weekly, Tuesday 05:00
+    description: 'Remove likes/chatbot sessions referencing deleted records.',
+    handler: orphanCleanup,
+  },
+  'embedding-refresh': {
+    schedule: '0 5 * * 3', // weekly, Wednesday 05:00
+    description: 'Re-embed queries whose text changed since last embedding.',
+    handler: embeddingRefresh,
+  },
+  'soft-delete-purge': {
+    schedule: '0 6 1 * *', // monthly, 1st at 06:00
+    description: 'Hard-delete content soft-deleted beyond the retention window (audited).',
+    handler: softDeletePurge,
   },
 };
 

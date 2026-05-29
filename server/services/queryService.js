@@ -9,6 +9,7 @@ import { findSimilarQueries } from './vectorService.js';
 import {
   DUPLICATE_SIMILARITY_THRESHOLD,
   MODERATION_TYPE,
+  QUERY_STATUS,
   ROLES,
 } from '../config/constants.js';
 
@@ -129,6 +130,9 @@ export async function createQuery(user, payload, screenshots = []) {
 /** List non-deleted queries with optional filters + pagination. */
 export async function listQueries(opts = {}, viewerId) {
   const filter = { is_deleted: false };
+  // Hide archived queries (LRU-evicted or merged) from the active list, unless
+  // archived ones are explicitly requested.
+  filter.is_archived = opts.status === QUERY_STATUS.ARCHIVED;
   if (opts.category) filter.category = opts.category;
   if (opts.tag) filter.tags = opts.tag;
   if (opts.status) filter.status = opts.status;
@@ -160,6 +164,14 @@ export async function getQuery(id, viewerId) {
     .populate('author_id', 'name')
     .lean();
   if (!doc) throw ApiError.notFound('Query not found');
+
+  // Auto-unarchive an LRU-evicted query when it's accessed again (but leave
+  // merged queries archived — they live under their canonical thread now).
+  if (doc.is_archived && doc.merge_status !== 'merged') {
+    await Query.updateOne({ _id: doc._id }, { is_archived: false });
+    doc.is_archived = false;
+  }
+
   return serialize(doc, viewerId);
 }
 
