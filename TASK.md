@@ -4,7 +4,7 @@
 > Convention: `[ ]` todo · `[~]` in progress · `[x]` done · `[!]` blocked. Add new items as they surface — never delete, mark done. Reference `PLANNING.md` for the *why*.
 
 **Last updated:** 2026-05-29
-**Current focus:** Milestone 3 — Forum + Solution Engine (Milestones 1 & 2 complete & pushed)
+**Current focus:** Milestone 4 — Badges & Bans (Milestones 1–3 complete & pushed)
 **Build approach:** vertical slice — one complete end-to-end loop before going wide.
 
 ---
@@ -15,7 +15,7 @@
 |---|---|---|---|
 | 1 | Foundation | Workspaces, models, auth, CI, Docker | `[x]` |
 | 2 | Ask a Query | AI showcase: intake + quality gates | `[x]` |
-| 3 | Forum + Solution Engine | Answers, likes, resolution, points | `[ ]` |
+| 3 | Forum + Solution Engine | Answers, likes, resolution, points | `[x]` |
 | 4 | Badges & Bans | Reputation + governance basics | `[ ]` |
 | 5 | FAQ + Chatbot + Notifications | RAG + knowledge promotion | `[ ]` |
 | 6 | Admin | Dashboard + moderation tooling | `[ ]` |
@@ -28,7 +28,7 @@
 
 > The handful of tasks being worked on right now. Pull from the milestone below as capacity frees up.
 
-- [ ] _Milestones 1 & 2 complete — pull from Milestone 3_
+- [ ] _Milestones 1–3 complete — pull from Milestone 4_
 
 ---
 
@@ -74,16 +74,16 @@ Goal: the full quality-gated intake flow, the project's standout AI feature.
 
 Goal: community answering loop with reputation rewards.
 
-- [ ] Post answers (markdown)
-- [ ] Like / upvote answers (one per user via `likes`)
-- [ ] Notifications on answer / like / accept / resolution
-- [ ] Solution Marking — Path A: author marks → 48h grace → points awarded
-- [ ] Solution Marking — Path B: no selection → auto-keep most-liked after 48h → no points
-- [ ] Prune extra answers (>3) on resolution; set status = resolved
-- [ ] Points system + leaderboard
-- [ ] Faulty-content reporting via report modal (queries + answers)
-- [ ] LRU access tracking on every view (`last_accessed_at`, `access_count`)
-- [ ] Solution finalization cron (daily) + manual trigger
+- [x] Post answers (markdown)
+- [x] Like / upvote answers (one per user via `likes`)
+- [x] Notifications on answer / like / accept / resolution
+- [x] Solution Marking — Path A: author marks → 48h grace → points awarded
+- [x] Solution Marking — Path B: no selection → auto-keep most-liked after 48h → no points
+- [x] Prune extra answers (>3) on resolution; set status = resolved
+- [x] Points system + leaderboard
+- [x] Faulty-content reporting via report modal (queries + answers)
+- [x] LRU access tracking on every view (`last_accessed_at`, `access_count`)
+- [x] Solution finalization cron (daily) + manual trigger
 
 ---
 
