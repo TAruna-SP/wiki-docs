@@ -826,12 +826,63 @@ textarea {
   padding-left: 1.1rem;
 }
 
+/* Design polish: smooth interactions + clear keyboard focus. */
+.btn-primary,
+.btn-link,
+.like-btn,
+.faq-q,
+.bell-btn,
+.chat-fab {
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+}
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+
+@media (max-width: 720px) {
+  .container {
+    margin: 1.25rem auto;
+  }
+  /* Wide tables scroll horizontally instead of breaking the layout. */
+  .admin-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  .chat-panel {
+    bottom: 4.75rem;
+  }
+}
+
 @media (max-width: 600px) {
   .navbar {
     flex-direction: column;
     gap: 0.5rem;
   }
+  .nav-links {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
   .grid-2 {
     grid-template-columns: 1fr;
+  }
+  .list-head,
+  .detail-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .bell-panel {
+    width: min(320px, calc(100vw - 2rem));
   }
 }
