@@ -4,7 +4,7 @@
 > Convention: `[ ]` todo · `[~]` in progress · `[x]` done · `[!]` blocked. Add new items as they surface — never delete, mark done. Reference `PLANNING.md` for the *why*.
 
 **Last updated:** 2026-05-29
-**Current focus:** Milestone 7 — Maintenance crons (Milestones 1–6 complete & pushed)
+**Current focus:** Milestone 8 — Polish & ship (Milestones 1–7 complete & pushed)
 **Build approach:** vertical slice — one complete end-to-end loop before going wide.
 
 ---
@@ -19,7 +19,7 @@
 | 4 | Badges & Bans | Reputation + governance basics | `[x]` |
 | 5 | FAQ + Chatbot + Notifications | RAG + knowledge promotion | `[x]` |
 | 6 | Admin | Dashboard + moderation tooling | `[x]` |
-| 7 | Maintenance crons | Scheduled jobs + manual triggers | `[ ]` |
+| 7 | Maintenance crons | Scheduled jobs + manual triggers | `[x]` |
 | 8 | Polish & ship | Design, docs, deploy-ready | `[ ]` |
 
 ---
@@ -28,7 +28,7 @@
 
 > The handful of tasks being worked on right now. Pull from the milestone below as capacity frees up.
 
-- [ ] _Milestones 1–6 complete — pull from Milestone 7_
+- [ ] _Milestones 1–7 complete — pull from Milestone 8_
 
 ---
 
@@ -134,13 +134,13 @@ Goal: the control room.
 
 Goal: wire all scheduled jobs + deletion-with-audit.
 
-- [ ] LRU eviction (daily) — archive resolved queries unaccessed 90+ days; auto-unarchive on access
-- [ ] Badge recalculation (daily)
-- [ ] Staleness check (weekly) — flag outdated answers
-- [ ] Orphan cleanup (weekly) — remove orphaned likes/sessions
-- [ ] Embedding refresh (weekly) — re-embed updated content
-- [ ] Soft-delete purge (monthly) — hard-delete items soft-deleted >30 days, with audit
-- [ ] Confirm every job is a plain function + admin-triggerable
+- [x] LRU eviction (daily) — archive resolved queries unaccessed 90+ days; auto-unarchive on access
+- [x] Badge recalculation (daily)
+- [x] Staleness check (weekly) — flag outdated answers
+- [x] Orphan cleanup (weekly) — remove orphaned likes/sessions
+- [x] Embedding refresh (weekly) — re-embed updated content
+- [x] Soft-delete purge (monthly) — hard-delete items soft-deleted >30 days, with audit
+- [x] Confirm every job is a plain function + admin-triggerable
 
 ---
 
