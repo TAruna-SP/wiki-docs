@@ -18,3 +18,6 @@ export const authLimiter = makeLimiter({ windowMs: 15 * 60 * 1000, max: 30, mess
 
 // Limiter for expensive AI-backed endpoints.
 export const aiLimiter = makeLimiter({ windowMs: 60 * 1000, max: 20, message: 'Too many AI requests.' });
+
+// Limiter for general content writes (answers, reports, likes) to curb spam.
+export const writeLimiter = makeLimiter({ windowMs: 60 * 1000, max: 40, message: 'You are doing that too often.' });

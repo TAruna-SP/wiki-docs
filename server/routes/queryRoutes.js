@@ -3,7 +3,7 @@ import * as ctrl from '../controllers/queryController.js';
 import * as answerCtrl from '../controllers/answerController.js';
 import { auth, optionalAuth } from '../middleware/auth.js';
 import { banCheck } from '../middleware/banCheck.js';
-import { aiLimiter } from '../middleware/rateLimit.js';
+import { aiLimiter, writeLimiter } from '../middleware/rateLimit.js';
 import { screenshotUpload } from '../middleware/upload.js';
 
 const router = Router();
@@ -23,8 +23,8 @@ router.delete('/:id', auth, ctrl.remove);
 
 // Answers + solution engine (Milestone 3), nested under the query.
 router.get('/:queryId/answers', optionalAuth, answerCtrl.list);
-router.post('/:queryId/answers', auth, banCheck, answerCtrl.post);
+router.post('/:queryId/answers', auth, banCheck, writeLimiter, answerCtrl.post);
 router.post('/:id/solution', auth, banCheck, answerCtrl.markSolution);
-router.post('/:id/report', auth, answerCtrl.reportQuery);
+router.post('/:id/report', auth, writeLimiter, answerCtrl.reportQuery);
 
 export default router;
