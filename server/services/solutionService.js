@@ -56,9 +56,9 @@ export async function markSolution(user, queryId, answerId) {
   };
 }
 
-/** Top users by reputation points. */
+/** Top users by reputation points (admins are excluded from the ranking). */
 export async function getLeaderboard(limit = 20) {
-  const users = await User.find({ is_deleted: false })
+  const users = await User.find({ is_deleted: false, role: { $ne: ROLES.ADMIN } })
     .sort({ points: -1, createdAt: 1 })
     .limit(Math.min(Number(limit) || 20, 50))
     .select('name points badges')

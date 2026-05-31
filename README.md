@@ -170,14 +170,11 @@ Two modules are the *only* touchpoints for external infrastructure, so swapping 
 
 ## Demo
 
-`npm run seed` loads a self-consistent, **offline-embedded** dataset — the imported FAQ set, demo questions, a resolved-and-promoted thread, and seeded reputation — so every feature works with zero live AI calls.
+`npm run seed` starts the platform from a clean slate — a single admin account plus the curated, **offline-embedded** FAQ set, so search and the RAG chatbot work with zero live AI calls. There are no demo users, points, or forum questions; everyone else self-registers and the forum/leaderboard fill up organically.
 
 | Role | Email | Password |
 |---|---|---|
 | Admin | `admin@example.com` | `admin12345` |
-| User | `demo@example.com` | `demo12345` |
-| User | `alex@example.com` | `alex12345` |
-| User | `sam@example.com` | `sam12345` |
 
 A scripted ~8-minute walkthrough lives in the **Demo loop checklist** at the bottom of [`TASK.md`](./TASK.md): register → ask a question (quality gates fire) → answer → resolve → reputation/badges → admin moderation/merge/ban → FAQ promotion → RAG chatbot → trigger a maintenance job.
 
