@@ -40,6 +40,7 @@ const goodQuery = {
   title: 'How do I configure the database connection pool?',
   body: 'My Express server keeps dropping its MongoDB connection under load. What pool settings are recommended for production deployments?',
   category: 'general',
+  joining_date: '2024-01-01',
 };
 
 describe('security: baseline response headers', () => {
@@ -77,6 +78,7 @@ describe('security: upload filename cannot smuggle an executable extension', () 
       .field('title', goodQuery.title)
       .field('body', goodQuery.body)
       .field('category', 'general')
+      .field('joining_date', '2024-01-01')
       .attach('screenshots', Buffer.from('fake-png-bytes'), {
         filename: 'evil.html',
         contentType: 'image/png',

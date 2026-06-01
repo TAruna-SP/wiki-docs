@@ -201,7 +201,11 @@ export default function AskQuery() {
         </fieldset>
 
         <label>
-          Screenshots (optional, up to 4 images)
+          Add a screenshot
+          <span className="hint">
+            Adding a screenshot gives moderators context and makes your question easier to solve (up
+            to 4 images).
+          </span>
           <input
             type="file"
             accept="image/*"

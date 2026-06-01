@@ -114,7 +114,7 @@ export async function createQuery(user, payload, screenshots = []) {
   const body = String(payload.body ?? '').trim();
   if (!title || !body) throw ApiError.badRequest('Title and body are required');
 
-  // Gate 1 — gibberish.
+  // Gate 1 — gibberish (runs first so spam protection isn't bypassed).
   const gib = await detectGibberish(`${title} ${body}`);
   if (gib.is_gibberish) {
     const strike = await recordSpamStrike(user, 'Gibberish submission blocked');
@@ -124,6 +124,10 @@ export async function createQuery(user, payload, screenshots = []) {
       ...strike,
     });
   }
+
+  // A joining date is mandatory — no posting without it.
+  const joiningDate = parseJoiningDate(payload.joining_date);
+  if (!joiningDate) throw ApiError.badRequest('Your joining date is required.');
 
   // Constrain category + tags to the admin-curated taxonomy (fail fast before
   // we spend an embedding call on a request with a disallowed category/tag).
@@ -159,7 +163,7 @@ export async function createQuery(user, payload, screenshots = []) {
     category,
     tags,
     contact_email: String(payload.contact_email ?? '').trim() || null,
-    joining_date: parseJoiningDate(payload.joining_date),
+    joining_date: joiningDate,
     screenshots,
     original_body: wasCorrected ? payload.original_body : null,
     was_auto_corrected: wasCorrected,

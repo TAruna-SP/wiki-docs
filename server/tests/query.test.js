@@ -156,6 +156,14 @@ describe('query intake', () => {
     expect(ok.body.query.tags).toEqual(['others']);
   });
 
+  test('rejects a question posted without a joining date', async () => {
+    const { token } = await makeUser();
+    // eslint-disable-next-line no-unused-vars
+    const { joining_date, ...noJoining } = goodQuery;
+    const res = await authed(request(app).post('/api/queries'), token).send(noJoining);
+    expect(res.status).toBe(400);
+  });
+
   test('captures the asker joining date and contact email', async () => {
     const { token } = await makeUser();
     const res = await authed(request(app).post('/api/queries'), token).send(goodQuery);

@@ -35,15 +35,17 @@ export function createApp() {
   app.use(express.urlencoded({ extended: true, limit: '1mb' }));
   if (!config.isTest) app.use(morgan('dev'));
 
-  // Serve user uploads as static files (Multer writes here). Force download +
-  // nosniff so a maliciously-named upload can never be rendered as HTML/script
-  // in the API origin (defence-in-depth against stored XSS via uploads).
+  // Serve user uploads as static files (Multer writes here). Uploads are
+  // validated images stored with a MIME-derived extension, so we serve them
+  // INLINE (viewable/zoomable in the browser) while keeping nosniff — the
+  // combination means a maliciously-named upload still can't be rendered as
+  // HTML/script in the API origin (defence-in-depth against stored XSS).
   app.use(
     '/uploads',
     express.static(path.join(__dirname, config.uploads.dir), {
       index: false,
       setHeaders: (res) => {
-        res.setHeader('Content-Disposition', 'attachment');
+        res.setHeader('Content-Disposition', 'inline');
         res.setHeader('X-Content-Type-Options', 'nosniff');
       },
     }),

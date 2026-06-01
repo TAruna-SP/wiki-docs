@@ -35,6 +35,8 @@ export default function QueryDetail() {
   const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState('top');
   const [retagOpen, setRetagOpen] = useState(false);
+  const [lightbox, setLightbox] = useState(null); // attachment src being viewed
+  const [reportTarget, setReportTarget] = useState(null); // { type, id }
 
   const loadAll = useCallback(async () => {
     const [q, a] = await Promise.all([getQuery(id), listAnswers(id)]);
@@ -73,10 +75,11 @@ export default function QueryDetail() {
     navigate('/queries');
   };
 
-  const onReportQuery = async () => {
-    const reason = window.prompt('Why are you reporting this question?');
-    if (reason === null) return;
-    await reportQuery(id, reason);
+  const submitReport = async (reason) => {
+    if (!reportTarget) return;
+    if (reportTarget.type === 'query') await reportQuery(reportTarget.id, reason);
+    else await reportAnswer(reportTarget.id, reason);
+    setReportTarget(null);
     window.alert('Thanks — a moderator will review it.');
   };
 
@@ -141,7 +144,7 @@ export default function QueryDetail() {
             </button>
           )}
           {user && !query.is_owner && !canModerate && (
-            <button className="btn-link" onClick={onReportQuery}>
+            <button className="btn-link" onClick={() => setReportTarget({ type: 'query', id })}>
               Report
             </button>
           )}
@@ -246,12 +249,24 @@ export default function QueryDetail() {
       )}
 
       {query.screenshots?.length > 0 && (
-        <div className="screenshots">
-          {query.screenshots.map((src) => (
-            <a key={src} href={src} target="_blank" rel="noreferrer">
-              <img src={src} alt="screenshot" />
-            </a>
-          ))}
+        <div className="attachments">
+          <span className="attachments-label">
+            <span className="material-symbols-outlined">attachment</span>
+            {query.screenshots.length} attachment{query.screenshots.length > 1 ? 's' : ''} added —
+            click to view
+          </span>
+          <div className="attachment-thumbs">
+            {query.screenshots.map((src) => (
+              <button
+                key={src}
+                type="button"
+                className="attachment-thumb"
+                onClick={() => setLightbox(src)}
+              >
+                <img src={src} alt="attachment" />
+              </button>
+            ))}
+          </div>
         </div>
       )}
 
@@ -282,6 +297,7 @@ export default function QueryDetail() {
             canManage={query.is_owner || canModerate}
             canModerate={canModerate}
             canComment={query.is_owner || a.is_owner || canModerate}
+            onReport={(answerId) => setReportTarget({ type: 'answer', id: answerId })}
             onChange={loadAll}
           />
         ))}
@@ -295,11 +311,82 @@ export default function QueryDetail() {
       {resolved && (
         <p className="muted">This question is closed — an answer was marked helpful, so it no longer accepts answers.</p>
       )}
+
+      {lightbox && <Lightbox src={lightbox} onClose={() => setLightbox(null)} />}
+      {reportTarget && (
+        <ReportModal
+          target={reportTarget}
+          onClose={() => setReportTarget(null)}
+          onSubmit={submitReport}
+        />
+      )}
     </div>
   );
 }
 
-function AnswerCard({ answer, isAdmin, canManage, canModerate, canComment, onChange }) {
+// Full-screen attachment viewer with click-to-zoom.
+function Lightbox({ src, onClose }) {
+  const [zoomed, setZoomed] = useState(false);
+  return (
+    <div className="lightbox-backdrop" onClick={onClose}>
+      <button className="lightbox-close" onClick={onClose} aria-label="Close">
+        ×
+      </button>
+      <img
+        src={src}
+        alt="attachment"
+        className={`lightbox-img ${zoomed ? 'zoomed' : ''}`}
+        onClick={(e) => {
+          e.stopPropagation();
+          setZoomed((z) => !z);
+        }}
+      />
+    </div>
+  );
+}
+
+// Collects a reason before filing a report (replaces a bare prompt()).
+function ReportModal({ target, onClose, onSubmit }) {
+  const [reason, setReason] = useState('');
+  const [busy, setBusy] = useState(false);
+  const submit = async (e) => {
+    e.preventDefault();
+    setBusy(true);
+    try {
+      await onSubmit(reason.trim());
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal" onClick={(e) => e.stopPropagation()}>
+        <h2>Report this {target.type}</h2>
+        <p className="muted">Tell a moderator what’s wrong. Be specific.</p>
+        <form className="form" onSubmit={submit}>
+          <textarea
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            rows={4}
+            placeholder="Reason for reporting…"
+            required
+            autoFocus
+          />
+          <div className="row">
+            <button className="btn-primary" disabled={busy || !reason.trim()}>
+              Submit report
+            </button>
+            <button type="button" className="btn-link" onClick={onClose}>
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function AnswerCard({ answer, isAdmin, canManage, canModerate, canComment, onReport, onChange }) {
   const [busy, setBusy] = useState(false);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(answer.body);
@@ -338,13 +425,6 @@ function AnswerCard({ answer, isAdmin, canManage, canModerate, canComment, onCha
     } finally {
       setBusy(false);
     }
-  };
-
-  const onReport = async () => {
-    const reason = window.prompt('Why are you reporting this answer?');
-    if (reason === null) return;
-    await reportAnswer(answer.id, reason);
-    window.alert('Thanks — a moderator will review it.');
   };
 
   const onDelete = async () => {
@@ -412,7 +492,7 @@ function AnswerCard({ answer, isAdmin, canManage, canModerate, canComment, onCha
             </button>
           )}
           {!answer.is_owner && !canModerate && (
-            <button className="btn-link" onClick={onReport}>
+            <button className="btn-link" onClick={() => onReport(answer.id)}>
               Report
             </button>
           )}

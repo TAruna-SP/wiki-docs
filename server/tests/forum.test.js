@@ -40,6 +40,7 @@ const authed = (req, token) => req.set('Authorization', `Bearer ${token}`);
 const goodQuery = {
   title: 'How do I configure the database connection?',
   body: 'My Express server cannot connect to MongoDB in production. What settings should I use to avoid timeouts?',
+  joining_date: '2024-01-01',
 };
 
 async function createQuery(token) {

@@ -49,6 +49,7 @@ async function resolvedQuery() {
   const created = await authed(request(app).post('/api/queries'), asker.token).send({
     title: 'How do I configure the database connection?',
     body: 'My Express server cannot connect to MongoDB in production and keeps timing out.',
+    joining_date: '2024-01-01',
   });
   const query = created.body.query;
   const posted = await authed(
@@ -143,6 +144,7 @@ describe('FAQ promotion', () => {
     const created = await authed(request(app).post('/api/queries'), asker.token).send({
       title: 'An open question with no accepted answer yet',
       body: 'This question has not been resolved so it should not be promotable.',
+      joining_date: '2024-01-01',
     });
     const admin = await makeAdmin();
 

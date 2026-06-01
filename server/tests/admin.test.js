@@ -39,6 +39,7 @@ const authed = (req, token) => req.set('Authorization', `Bearer ${token}`);
 const baseQuery = {
   title: 'How do I configure the database connection?',
   body: 'My Express server cannot connect to MongoDB in production and keeps timing out badly.',
+  joining_date: '2024-01-01',
 };
 const createQuery = (token, overrides = {}) =>
   authed(request(app).post('/api/queries'), token).send({ ...baseQuery, ...overrides });

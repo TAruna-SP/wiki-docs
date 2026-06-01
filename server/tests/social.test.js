@@ -35,6 +35,7 @@ const authed = (req, token) => req.set('Authorization', `Bearer ${token}`);
 const goodQuery = {
   title: 'How do I configure the database connection pool?',
   body: 'My Express server keeps dropping its MongoDB connection under load. What pool settings help?',
+  joining_date: '2024-01-01',
 };
 
 async function createQuery(token, over = {}) {
