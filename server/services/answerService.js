@@ -50,6 +50,10 @@ export async function postAnswer(user, queryId, body) {
   if (query.status === QUERY_STATUS.RESOLVED) {
     throw ApiError.badRequest('This question is already resolved');
   }
+  // A user cannot answer their own question.
+  if (String(query.author_id) === String(user._id)) {
+    throw ApiError.badRequest('You cannot answer your own question');
+  }
 
   const answer = await Answer.create({ query_id: query._id, author_id: user._id, body: text });
 
@@ -190,9 +194,14 @@ export async function setAnswerVote(user, answerId, desired) {
     throw ApiError.badRequest('You cannot vote on your own answer');
   }
   // Forum interaction is between a user and the question poster only — no peer
-  // voting. Only the question's author (or an admin) may rate answers.
+  // voting. Only the question's author (or an admin/moderator) may rate answers.
   const parent = await Query.findOne({ _id: answer.query_id, is_deleted: false });
-  if (!parent || (String(parent.author_id) !== String(user._id) && user.role !== ROLES.ADMIN)) {
+  const canRate =
+    parent &&
+    (String(parent.author_id) === String(user._id) ||
+      user.role === ROLES.ADMIN ||
+      user.is_moderator);
+  if (!canRate) {
     throw ApiError.forbidden('Only the question author can rate answers');
   }
 
@@ -299,8 +308,8 @@ export async function toggleHelpful(user, answerId) {
   if (!query) throw ApiError.notFound('Query not found');
 
   const isAuthor = String(query.author_id) === String(user._id);
-  if (!isAuthor && user.role !== ROLES.ADMIN) {
-    throw ApiError.forbidden('Only the question author can mark an answer as helpful');
+  if (!isAuthor && user.role !== ROLES.ADMIN && !user.is_moderator) {
+    throw ApiError.forbidden('Only the question author or a moderator can mark an answer as helpful');
   }
 
   const nowHelpful = !answer.is_helpful;

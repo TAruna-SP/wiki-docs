@@ -65,6 +65,12 @@ export async function flagAttention(id) {
   return data;
 }
 
+// Moderator/admin: change a question's category and tags. Returns { query }.
+export async function retagQuery(id, { category, tags }) {
+  const { data } = await api.patch(`/queries/${id}/taxonomy`, { category, tags });
+  return data.query;
+}
+
 // The current user's bookmarked questions.
 export async function getBookmarks() {
   const { data } = await api.get('/queries/bookmarks');

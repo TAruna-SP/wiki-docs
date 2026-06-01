@@ -51,6 +51,14 @@ export const flagAttention = asyncHandler(async (req, res) => {
   res.json(result);
 });
 
+export const retag = asyncHandler(async (req, res) => {
+  const query = await queryService.moderateTaxonomy(req.user, req.params.id, {
+    category: req.body?.category,
+    tags: req.body?.tags,
+  });
+  res.json({ query });
+});
+
 export const bookmarks = asyncHandler(async (req, res) => {
   const result = await queryService.listBookmarks(req.user);
   res.json(result);

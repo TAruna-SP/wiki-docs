@@ -34,6 +34,9 @@ router.post('/:id/save', auth, ctrl.save);
 // Escalation: an Expert-level member flags a question for admin attention.
 router.post('/:id/attention', auth, banCheck, ctrl.flagAttention);
 
+// Moderators/admins re-categorise or re-tag a question seen in the forum.
+router.patch('/:id/taxonomy', auth, banCheck, ctrl.retag);
+
 // Answers + solution engine (Milestone 3), nested under the query.
 router.get('/:queryId/answers', optionalAuth, answerCtrl.list);
 router.post('/:queryId/answers', auth, banCheck, writeLimiter, answerCtrl.post);

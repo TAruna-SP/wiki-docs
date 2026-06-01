@@ -402,8 +402,10 @@ export async function updateQuery(user, id, payload) {
  */
 export async function flagForAttention(user, id) {
   const isExpert = (user.badges ?? []).includes(ATTENTION_FLAG_BADGE_KEY);
-  if (!isExpert && user.role !== ROLES.ADMIN) {
-    throw ApiError.forbidden('Only Expert-level members can flag a question for admin attention');
+  if (!isExpert && user.role !== ROLES.ADMIN && !user.is_moderator) {
+    throw ApiError.forbidden(
+      'Only Expert-level members or moderators can flag a question for admin attention',
+    );
   }
 
   const query = await Query.findOne({ _id: id, is_deleted: false });
@@ -416,6 +418,30 @@ export async function flagForAttention(user, id) {
     await query.save();
   }
   return { ok: true, needs_attention: true };
+}
+
+/**
+ * Re-categorise / re-tag a question. Admins and moderators only — the asker
+ * uses the normal edit flow. Validated against the admin taxonomy like any
+ * other category/tag change.
+ */
+export async function moderateTaxonomy(user, id, { category, tags }) {
+  const canModerate = user.role === ROLES.ADMIN || user.is_moderator;
+  if (!canModerate) {
+    throw ApiError.forbidden('Only moderators or admins can change a question’s category or tags');
+  }
+  const doc = await Query.findById(id);
+  if (!doc || doc.is_deleted) throw ApiError.notFound('Query not found');
+
+  const resolved = await resolveTaxonomy(
+    category !== undefined ? category : doc.category,
+    tags !== undefined ? tags : doc.tags,
+  );
+  doc.category = resolved.category;
+  doc.tags = resolved.tags;
+  await doc.save();
+  await doc.populate('author_id', 'name');
+  return serialize(doc, user._id);
 }
 
 /** Soft-delete a query (author or admin). */

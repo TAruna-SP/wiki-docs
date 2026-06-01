@@ -131,7 +131,7 @@ export default function QueryDetail() {
               Delete{!query.is_owner && canModerate ? ' (mod)' : ''}
             </button>
           )}
-          {user && !query.is_owner && (
+          {user && !query.is_owner && !canModerate && (
             <button className="btn-link" onClick={onReportQuery}>
               Report
             </button>
@@ -253,16 +253,19 @@ export default function QueryDetail() {
           <AnswerCard
             key={a.id}
             answer={a}
-            canManage={query.is_owner || isAdmin}
+            canManage={query.is_owner || canModerate}
             canModerate={canModerate}
-            canComment={query.is_owner || a.is_owner || isAdmin}
+            canComment={query.is_owner || a.is_owner || canModerate}
             onChange={loadAll}
           />
         ))}
         {answers.length === 0 && <p className="muted">No answers yet.</p>}
       </div>
 
-      {user && !resolved && <AnswerForm queryId={id} onPosted={loadAll} />}
+      {user && !resolved && !query.is_owner && <AnswerForm queryId={id} onPosted={loadAll} />}
+      {user && !resolved && query.is_owner && (
+        <p className="muted">This is your question — you can’t answer it yourself. Others will reply here.</p>
+      )}
       {resolved && (
         <p className="muted">This question is closed — an answer was marked helpful, so it no longer accepts answers.</p>
       )}
@@ -322,7 +325,7 @@ function AnswerCard({ answer, canManage, canModerate, canComment, onChange }) {
               Delete{!answer.is_owner && canModerate ? ' (mod)' : ''}
             </button>
           )}
-          {!answer.is_owner && (
+          {!answer.is_owner && !canModerate && (
             <button className="btn-link" onClick={onReport}>
               Report
             </button>
